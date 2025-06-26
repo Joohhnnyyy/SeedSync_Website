@@ -71,7 +71,6 @@ uploads/
 public/uploads/
 
 # Output video/media
-*.mp4
 *.avi
 *.mov
 
