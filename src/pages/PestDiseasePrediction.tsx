@@ -11,6 +11,7 @@ import { Slider } from '@/components/ui/slider';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { cropVarieties, regions } from '@/lib/cropData';
+import { apiUrl } from "../lib/utils";
 
 const ResultSection = ({ title, text }: { title: string; text: string }) => {
   const renderLineWithBold = (lineContent: string) => {
@@ -177,7 +178,7 @@ const PestDiseasePredictionNew = () => {
     };
 
     try {
-      const response = await fetch('/api/pest-disease/predict', {
+      const response = await fetch(apiUrl('/api/pest-disease/predict'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

@@ -32,6 +32,7 @@ import { Progress } from '@/components/ui/progress';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { apiUrl } from "../lib/utils";
 
 const ImageUpload = () => {
   const navigate = useNavigate();
@@ -271,7 +272,7 @@ const ImageUpload = () => {
       formData.append('file', image);
       console.log('FormData created with file:', image.name, image.size);
 
-      const response = await fetch('/api/disease/predict_disease', {
+      const response = await fetch(apiUrl('/api/disease/predict_disease'), {
         method: 'POST',
         body: formData,
       });

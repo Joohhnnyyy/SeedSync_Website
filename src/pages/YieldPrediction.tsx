@@ -12,7 +12,7 @@ import Footer from '@/components/Footer';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
-import { cn } from '@/lib/utils';
+import { cn, apiUrl } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 
 const YieldPrediction = () => {
@@ -67,7 +67,7 @@ const YieldPrediction = () => {
         throw new Error('Please fill in all required fields');
       }
 
-      const response = await fetch('/api/yield/predict', {
+      const response = await fetch(apiUrl('/api/yield/predict'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

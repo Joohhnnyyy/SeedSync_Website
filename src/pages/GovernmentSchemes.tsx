@@ -17,6 +17,7 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { apiUrl } from "../lib/utils";
 
 interface Scheme {
   id: string;
@@ -75,7 +76,7 @@ const GovernmentSchemes = () => {
         queryParams.append('scheme_type', filters.schemeType);
       }
       
-      const response = await fetch(`/api/schemes?${queryParams}`);
+      const response = await fetch(apiUrl(`/api/schemes?${queryParams}`));
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -84,7 +85,7 @@ const GovernmentSchemes = () => {
       setTotalSchemes(data.total);
 
       if (isInitialLoad) {
-        const allSchemesResponse = await fetch('/api/schemes?limit=100');
+        const allSchemesResponse = await fetch(apiUrl('/api/schemes?limit=100'));
         const allSchemesData = await allSchemesResponse.json();
         const types = Array.from(new Set(allSchemesData.schemes.map((s: Scheme) => s.type).filter(Boolean)));
         setAllSchemeTypes(types as string[]);

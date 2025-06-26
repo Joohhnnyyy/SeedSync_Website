@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
+import { apiUrl } from "../lib/utils";
 
 interface Scheme {
   id: string;
@@ -40,7 +41,7 @@ const SchemeDetails = () => {
       try {
         setLoading(true);
         setError(null);
-        const response = await fetch(`/api/schemes/${schemeId}`);
+        const response = await fetch(apiUrl(`/api/schemes/${schemeId}`));
         
         if (!response.ok) {
           if (response.status === 404) {

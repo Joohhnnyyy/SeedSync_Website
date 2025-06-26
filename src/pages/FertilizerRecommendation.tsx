@@ -12,6 +12,7 @@ import Footer from '@/components/Footer';
 import { Slider } from '@/components/ui/slider';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Info } from 'lucide-react';
+import { apiUrl } from "../lib/utils";
 
 // Import fertilizer images
 import defaultFertilizer from '@/assets/fertilizers/default.png';
@@ -125,7 +126,7 @@ const FertilizerRecommendation = () => {
         throw new Error('Please select both crop type and soil type');
       }
 
-      const response = await fetch('/api/fertilizer/predict', {
+      const response = await fetch(apiUrl('/api/fertilizer/predict'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

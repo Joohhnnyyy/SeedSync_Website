@@ -10,6 +10,7 @@ import { ChevronLeft, Upload, Camera, CheckCircle, AlertCircle, User } from 'luc
 import { signOut } from "firebase/auth";
 import { auth } from "../lib/firebase";
 import { useState, useRef, useEffect } from 'react';
+import { apiUrl } from "../lib/utils";
 
 interface ProfileData {
   firstName: string;
@@ -58,7 +59,7 @@ const Profile = () => {
     try {
       setIsLoading(true);
       const userId = getUserId();
-      const response = await fetch(`/api/profile/${userId}`);
+      const response = await fetch(apiUrl(`/api/profile/${userId}`));
       
       if (response.ok) {
         const result = await response.json();
@@ -128,7 +129,7 @@ const Profile = () => {
         formData.append('image', file);
 
         console.log('Uploading image for user:', userId);
-        const response = await fetch(`/api/profile/${userId}/image`, {
+        const response = await fetch(apiUrl(`/api/profile/${userId}/image`), {
           method: 'POST',
           body: formData
         });
@@ -177,7 +178,7 @@ const Profile = () => {
   const removeProfileImage = async () => {
     try {
       const userId = getUserId();
-      const response = await fetch(`/api/profile/${userId}/image`, {
+      const response = await fetch(apiUrl(`/api/profile/${userId}/image`), {
         method: 'DELETE'
       });
 
@@ -255,7 +256,7 @@ const Profile = () => {
 
     try {
       const userId = getUserId();
-      const response = await fetch(`/api/profile/${userId}`, {
+      const response = await fetch(apiUrl(`/api/profile/${userId}`), {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'

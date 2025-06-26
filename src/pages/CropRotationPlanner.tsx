@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { apiUrl } from "../lib/utils";
 
 const CropRotationPlanner = () => {
   const navigate = useNavigate();
@@ -81,7 +82,7 @@ const CropRotationPlanner = () => {
     setRecommendation(null);
 
     try {
-      const response = await fetch('/api/rotation/generate-advice', {
+      const response = await fetch(apiUrl('/api/rotation/generate-advice'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
