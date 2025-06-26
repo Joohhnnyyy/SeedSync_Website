@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { apiUrl } from "../lib/utils";
 
 export default function CropPredictForm() {
   const [formData, setFormData] = useState({
@@ -14,7 +15,7 @@ export default function CropPredictForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:8000/api/crop/predict-crop", {
+      const res = await axios.post(apiUrl("/api/crop/predict-crop"), {
         ...formData,
         N: parseFloat(formData.N),
         P: parseFloat(formData.P),

@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import axios from 'axios';
+import { apiUrl } from "../lib/utils";
 
 const cropImages = {
   rice:  "https://plus.unsplash.com/premium_photo-1705338026411-00639520a438?q=80&w=2487&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -137,7 +138,7 @@ const CropRecommendation = () => {
     setCropDescription("");
 
     try {
-      const res = await axios.post("http://localhost:8000/api/crop/predict-crop", {
+      const res = await axios.post(apiUrl("/api/crop/predict-crop"), {
         N: parseFloat(formData.nitrogen.toString()),
         P: parseFloat(formData.phosphorus.toString()),
         K: parseFloat(formData.potassium.toString()),
