@@ -1,2 +1,0 @@
-# This file specifies the Python version for the mock FastAPI backend service.
-python-3.10.13 

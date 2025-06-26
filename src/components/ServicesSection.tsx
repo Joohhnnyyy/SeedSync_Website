@@ -5,6 +5,7 @@ import { Leaf, Droplet, TrendingUp, RotateCw, Bug, Smartphone, Upload } from 'lu
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/use-toast';
+import vid1 from '@/assets/card_videos/vid1.mp4';
 
 interface Service {
   icon: LucideIcon;
@@ -59,7 +60,7 @@ const services: Service[] = [
     image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop',
     hasSplineBackground: true,
     route: '/irrigation-advice',
-    video: '/vid1.mp4'
+    video: vid1
   },
   {
     icon: Upload,
