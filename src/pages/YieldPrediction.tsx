@@ -136,7 +136,7 @@ const YieldPrediction = () => {
                 <div className="mb-6">
                   <h2 className="text-lg font-semibold text-green-700 mb-4 mt-2">Crop Information</h2>
                   <div className="mb-6">
-                    <Label htmlFor="crop" className="font-semibold">Crop Type *</Label>
+                    <Label htmlFor="crop" className="font-semibold">Crop Type </Label>
                     <Select name="crop" onValueChange={(value) => handleSelectChange('crop', value)}>
                   <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select your crop" />
@@ -201,7 +201,7 @@ const YieldPrediction = () => {
                 </Select>
               </div>
                   <div className="mb-6">
-                    <Label htmlFor="state" className="font-semibold">State *</Label>
+                    <Label htmlFor="state" className="font-semibold">State </Label>
                     <Select name="state" onValueChange={(value) => handleSelectChange('state', value)}>
                   <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select state" />
@@ -241,7 +241,7 @@ const YieldPrediction = () => {
                 </Select>
               </div>
                   <div className="mb-6">
-                    <Label htmlFor="season" className="font-semibold">Season *</Label>
+                    <Label htmlFor="season" className="font-semibold">Season </Label>
                     <Select name="season" onValueChange={(value) => handleSelectChange('season', value)}>
                   <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select season" />
