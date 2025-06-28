@@ -7,6 +7,7 @@ import MotivationSection from '@/components/MotivationSection';
 import MakerSection from '@/components/MakerSection';
 import Footer from '@/components/Footer';
 import { useLoading } from '@/contexts/LoadingContext';
+import ParticleBackground from '@/components/ParticleBackground';
 
 const Index = () => {
   const { isLoading, completeLoading } = useLoading();
@@ -20,21 +21,24 @@ const Index = () => {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-      className="flex flex-col min-h-screen bg-white"
-    >
-      <Navigation />
-      <main className="flex-grow">
-        <HeroSection />
-        <ServicesSection />
-        <MotivationSection />
-        <MakerSection />
-      </main>
-      <Footer />
-    </motion.div>
+    <>
+      <ParticleBackground />
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="flex flex-col min-h-screen bg-white"
+      >
+        <Navigation />
+        <main className="flex-grow">
+          <HeroSection />
+          <ServicesSection />
+          <MotivationSection />
+          <MakerSection />
+        </main>
+        <Footer />
+      </motion.div>
+    </>
   );
 };
 

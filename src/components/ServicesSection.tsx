@@ -5,6 +5,7 @@ import { Leaf, Droplet, TrendingUp, RotateCw, Bug, Smartphone, Upload } from 'lu
 import type { LucideIcon } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/components/ui/use-toast';
+import React, { useState } from 'react';
 
 interface Service {
   icon: LucideIcon;
@@ -81,6 +82,7 @@ const ServicesSection = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const handleServiceClick = (service: Service) => {
     if (!user) {
@@ -113,17 +115,34 @@ const ServicesSection = () => {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 overflow-visible">
           {services.map((service, index) => {
             const IconComponent = service.icon;
+            // Dock-style scaling
+            let scale = 1;
+            if (hoveredIndex !== null) {
+              const distance = Math.abs(index - hoveredIndex);
+              if (distance === 0) scale = 1.4;
+              else if (distance === 1) scale = 1.15;
+              else if (distance === 2) scale = 1.05;
+            }
+
             return (
               <motion.div
                 key={service.title}
-                className="relative overflow-hidden rounded-lg shadow-lg cursor-pointer"
+                className="relative overflow-hidden rounded-lg shadow-lg cursor-pointer transition-transform duration-300 hover:z-20"
+                style={{
+                  transform: `scale(${scale})`,
+                  zIndex: hoveredIndex === index ? 20 : 10 - Math.abs((hoveredIndex ?? 0) - index),
+                }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 onClick={() => handleServiceClick(service)}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                onTouchStart={() => setHoveredIndex(index)}
+                onTouchEnd={() => setHoveredIndex(null)}
               >
                 {service.video ? (
                   <video

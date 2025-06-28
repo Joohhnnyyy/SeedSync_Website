@@ -26,6 +26,8 @@ import SchemeDetails from "./pages/SchemeDetails";
 import ImageUpload from "./pages/ImageUpload";
 import ReportIssue from "./pages/ReportIssue";
 import ScrollToTop from '@/components/ScrollToTop';
+import DiseaseDatabase from './pages/DiseaseDatabase';
+import CropCalendar from './pages/CropCalendar';
 
 const queryClient = new QueryClient();
 
@@ -56,6 +58,8 @@ const App = () => (
             <Route path="/schemes/:schemeId" element={<SchemeDetails />} />
             <Route path="/image-upload" element={<ImageUpload />} />
             <Route path="/report-issue" element={<ReportIssue />} />
+            <Route path="/disease-database" element={<DiseaseDatabase />} />
+            <Route path="/crop-calendar" element={<CropCalendar />} />
             <Route path="/500" element={<ServerError />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

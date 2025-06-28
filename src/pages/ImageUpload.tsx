@@ -23,7 +23,8 @@ import {
   AlertOctagon,
   AlertCircle as AlertCircleIcon,
   Video,
-  VideoOff
+  VideoOff,
+  Calendar
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -376,12 +377,12 @@ const ImageUpload = () => {
               </div>
             </div>
             <div className="flex flex-col sm:flex-row gap-2 sm:space-x-4">
-              <Button variant="outline" size="sm" className="w-full sm:w-auto">
-                <History className="h-4 w-4 mr-2" />
-                <span className="hidden sm:inline">Upload History</span>
-                <span className="sm:hidden">History</span>
+              <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => navigate('/crop-calendar')}>
+                <Calendar className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Crop Calendar</span>
+                <span className="sm:hidden">Calendar</span>
               </Button>
-              <Button variant="outline" size="sm" className="w-full sm:w-auto">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={() => navigate('/disease-database')}>
                 <Database className="h-4 w-4 mr-2" />
                 <span className="hidden sm:inline">Disease Database</span>
                 <span className="sm:hidden">Database</span>

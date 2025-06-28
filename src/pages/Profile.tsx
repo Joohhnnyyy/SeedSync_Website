@@ -291,6 +291,7 @@ const Profile = () => {
     setProfileData(originalData);
     setShowError(false);
     setShowSuccess(false);
+    setErrorMessage("");
   };
 
   const hasChanges = () => {
