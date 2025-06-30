@@ -464,7 +464,7 @@ const Profile = () => {
                           type="text" 
                           value={profileData.firstName}
                           onChange={(e) => handleInputChange('firstName', e.target.value)}
-                          className="h-12"
+                          className="h-12 bg-gray-100 border-gray-300 placeholder-gray-600"
                           placeholder="Enter your first name"
                         />
                       </div>
@@ -476,7 +476,7 @@ const Profile = () => {
                           type="text" 
                           value={profileData.lastName}
                           onChange={(e) => handleInputChange('lastName', e.target.value)}
-                          className="h-12"
+                          className="h-12 bg-gray-100 border-gray-300 placeholder-gray-600"
                           placeholder="Enter your last name"
                         />
                       </div>
@@ -489,7 +489,7 @@ const Profile = () => {
                         type="email" 
                         value={profileData.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
-                        className="h-12"
+                        className="h-12 bg-gray-100 border-gray-300 placeholder-gray-600"
                         placeholder="Enter your email address"
                       />
                     </div>
@@ -501,7 +501,7 @@ const Profile = () => {
                         type="tel" 
                         value={profileData.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
-                        className="h-12"
+                        className="h-12 bg-gray-100 border-gray-300 placeholder-gray-600"
                         placeholder="Enter your phone number"
                       />
                     </div>
@@ -513,7 +513,7 @@ const Profile = () => {
                         type="text" 
                         value={profileData.location}
                         onChange={(e) => handleInputChange('location', e.target.value)}
-                        className="h-12"
+                        className="h-12 bg-gray-100 border-gray-300 placeholder-gray-600"
                         placeholder="Enter your farm location"
                       />
                     </div>

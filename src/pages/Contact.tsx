@@ -59,7 +59,7 @@ const Contact = () => {
                         id="name" 
                         type="text" 
                         placeholder="Your full name"
-                        className="h-12"
+                        className="h-12 bg-gray-100 border-gray-300 placeholder-gray-700"
                       />
                     </div>
                     
@@ -69,7 +69,7 @@ const Contact = () => {
                         id="email" 
                         type="email" 
                         placeholder="Your email address"
-                        className="h-12"
+                        className="h-12 bg-gray-100 border-gray-300 placeholder-gray-700"
                       />
                     </div>
                     
@@ -78,7 +78,7 @@ const Contact = () => {
                       <Textarea 
                         id="message" 
                         placeholder="Tell us how we can help you..."
-                        className="min-h-[120px] resize-none"
+                        className="min-h-[120px] resize-none bg-gray-100 border-gray-300 placeholder-gray-700"
                       />
                     </div>
                     
