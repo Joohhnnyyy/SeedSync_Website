@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Plus, Filter, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { ArrowLeft, Plus, Filter, AlertTriangle, CheckCircle, Clock } from 'lucide-react';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface CalendarEvent {
   id: string;
@@ -173,12 +185,13 @@ const cropData = {
 
 const CropCalendar: React.FC = () => {
   const [selectedMonth, setSelectedMonth] = useState(new Date());
-  const [selectedCrop, setSelectedCrop] = useState<string>('');
+  const [selectedCrop, setSelectedCrop] = useState<string>("");
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [cropSeasons, setCropSeasons] = useState<CropSeason[]>([]);
   const [showAddEvent, setShowAddEvent] = useState(false);
   const [showAddSeason, setShowAddSeason] = useState(false);
   const [filterType, setFilterType] = useState<string>('all');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const navigate = useNavigate();
 
   const getDaysInMonth = (date: Date) => {
@@ -304,15 +317,15 @@ const CropCalendar: React.FC = () => {
     const daysFromStart = Math.floor((date.getTime() - season.startDate.getTime()) / (24 * 60 * 60 * 1000));
     const progress = Math.max(0, Math.min(1, daysFromStart / totalDays));
     
-    // Different opacity for different growth stages
+    // Different opacity for different growth stages - increased for better mobile visibility
     if (daysFromStart < parseInt(cropData[season.crop as keyof typeof cropData].germination)) {
-      return 'opacity-30'; // Germination - lighter
+      return 'opacity-50'; // Germination - increased from 30
     } else if (daysFromStart < parseInt(cropData[season.crop as keyof typeof cropData].germination) + parseInt(cropData[season.crop as keyof typeof cropData].vegetativeGrowth)) {
-      return 'opacity-50'; // Vegetative - medium
+      return 'opacity-70'; // Vegetative - increased from 50
     } else if (daysFromStart < parseInt(cropData[season.crop as keyof typeof cropData].germination) + parseInt(cropData[season.crop as keyof typeof cropData].vegetativeGrowth) + parseInt(cropData[season.crop as keyof typeof cropData].flowering)) {
-      return 'opacity-70'; // Flowering - darker
+      return 'opacity-85'; // Flowering - increased from 70
     } else {
-      return 'opacity-90'; // Fruiting - darkest
+      return 'opacity-95'; // Fruiting - increased from 90
     }
   };
 
@@ -533,71 +546,72 @@ const CropCalendar: React.FC = () => {
         <div className="bg-white/90 rounded-2xl shadow-lg p-6 mb-8 border border-gray-100 flex flex-col md:flex-row md:items-center gap-4">
           <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
             <span className="text-green-600"><svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" /></svg></span>
-            <select
-              id="quickCropSelect"
-              className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-medium rounded-md px-3 h-9 placeholder-gray-400"
-              style={{ minWidth: 120 }}
-              onChange={(e) => {
-                const cropName = e.target.value;
-                if (cropName) {
-                  showPlantingSeasonInfo(cropName);
-                  setCropSeasons(prev => prev.filter(s => !s.id.startsWith('preview-')));
-                } else {
-                  const infoDiv = document.getElementById('plantingSeasonInfo');
-                  if (infoDiv) infoDiv.classList.add('hidden');
-                }
+            <Select
+              value={selectedCrop}
+              onValueChange={(value) => {
+                setSelectedCrop(value);
+                showPlantingSeasonInfo(value);
+                setCropSeasons(prev => prev.filter(s => !s.id.startsWith('preview-')));
               }}
             >
-              <option value="">Select Crop...</option>
-              {Object.keys(cropData).map(crop => (
-                <option key={crop} value={crop}>{crop}</option>
-              ))}
-            </select>
+              <SelectTrigger className="flex-1">
+                <SelectValue placeholder="Select Crop..." />
+              </SelectTrigger>
+              <SelectContent>
+                {Object.keys(cropData).map(crop => (
+                  <SelectItem key={crop} value={crop}>{crop}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
           <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2">
             <span className="text-blue-600"><svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg></span>
-            <input
-              type="date"
-              id="quickPlantingDate"
-              className="flex-1 bg-transparent border-none focus:ring-0 text-sm font-medium rounded-md px-3 h-9 placeholder-gray-400"
-              placeholder="Planting Date"
-              style={{ minWidth: 120 }}
-              onChange={(e) => {
-                const cropSelect = document.getElementById('quickCropSelect') as HTMLSelectElement;
-                const cropName = cropSelect.value;
-                const selectedDate = new Date(e.target.value);
-                if (cropName && e.target.value) {
-                  const crop = cropData[cropName as keyof typeof cropData];
-                  if (crop) {
-                    if (isValidPlantingDate(crop, selectedDate)) {
-                      e.target.setCustomValidity('');
-                      previewCropSeason(cropName, selectedDate);
-                    } else {
-                      e.target.setCustomValidity(`Planting should be in: ${crop.planting.join(', ')}`);
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !selectedDate && "text-muted-foreground"
+                  )}
+                >
+                  {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <CalendarComponent
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={(date: Date | undefined) => {
+                    setSelectedDate(date);
+                    if (date && selectedCrop) {
+                      const crop = cropData[selectedCrop as keyof typeof cropData];
+                      if (crop && isValidPlantingDate(crop, date)) {
+                        previewCropSeason(selectedCrop, date);
+                      }
                     }
-                  }
-                }
-              }}
-            />
+                  }}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
           </div>
-          <button
+          <Button
             type="button"
             onClick={() => {
-              const cropSelect = document.getElementById('quickCropSelect') as HTMLSelectElement;
-              const dateInput = document.getElementById('quickPlantingDate') as HTMLInputElement;
-              if (!cropSelect.value || !dateInput.value) {
+              if (!selectedCrop || !selectedDate) {
                 alert('Please select both crop and planting date');
                 return;
               }
-              if (!dateInput.checkValidity()) {
-                dateInput.reportValidity();
+              const crop = cropData[selectedCrop as keyof typeof cropData];
+              if (!crop) return;
+              if (!isValidPlantingDate(crop, selectedDate)) {
+                alert(`Planting should be in: ${crop.planting.join(', ')}`);
                 return;
               }
-              const selectedDate = new Date(dateInput.value);
-              addCropSeason(cropSelect.value, selectedDate);
-              cropSelect.value = '';
-              dateInput.value = '';
-              dateInput.setCustomValidity('');
+              addCropSeason(selectedCrop, selectedDate);
+              setSelectedCrop("");
+              setSelectedDate(undefined);
               setCropSeasons(prev => prev.filter(s => !s.id.startsWith('preview-')));
               const infoDiv = document.getElementById('plantingSeasonInfo');
               if (infoDiv) infoDiv.classList.add('hidden');
@@ -605,7 +619,7 @@ const CropCalendar: React.FC = () => {
             className="w-full md:w-auto bg-green-600 text-white px-8 py-3 rounded-lg font-bold shadow-lg hover:bg-green-700 transition-all duration-150"
           >
             Find Crop Season
-          </button>
+          </Button>
         </div>
         <div id="plantingSeasonInfo" className="hidden mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
           <strong>Planting Season:</strong> <span id="seasonInfo"></span>
@@ -651,7 +665,7 @@ const CropCalendar: React.FC = () => {
                 return date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
               })();
               const getBackgroundStyle = () => {
-                if (dayCropSeasons.length === 0) return '';
+                if (dayCropSeasons.length === 0) return 'bg-white';
                 const season = dayCropSeasons[0];
                 const baseColor = getCropSeasonColor(season.crop).split(' ')[0];
                 const opacity = getCropSeasonOpacity(date, season);
@@ -660,7 +674,7 @@ const CropCalendar: React.FC = () => {
               return (
                 <div
                   key={i}
-                  className={`h-32 border border-gray-200 rounded-xl p-1 relative transition hover:shadow-lg hover:z-10 bg-white ${getBackgroundStyle()} ${isToday ? 'ring-2 ring-green-400' : ''}`}
+                  className={`h-32 border border-gray-200 rounded-xl p-1 relative transition hover:shadow-lg hover:z-10 ${getBackgroundStyle()} ${isToday ? 'ring-2 ring-green-400' : ''}`}
                 >
                   <div className={`text-sm font-bold mb-1 ${isToday ? 'text-green-700' : 'text-gray-900'}`}>{i + 1}</div>
                   {dayCropSeasons.length > 0 && (
@@ -668,7 +682,7 @@ const CropCalendar: React.FC = () => {
                       {dayCropSeasons.map(season => (
                         <div
                           key={season.id}
-                          className="text-xs font-medium text-gray-700 bg-white/80 px-1 py-0.5 rounded shadow-sm"
+                          className="text-xs font-medium text-gray-700 bg-white/90 px-1 py-0.5 rounded shadow-sm border border-gray-200"
                         >
                           {season.crop}
                         </div>
@@ -718,18 +732,15 @@ const CropCalendar: React.FC = () => {
                 <div className="flex flex-col gap-4 w-full">
                   {(() => {
                     let legendCrop = null;
-                    if (typeof window !== 'undefined' && document && document.getElementById('quickCropSelect')) {
-                      const select = document.getElementById('quickCropSelect') as HTMLSelectElement;
-                      if (select && select.value && cropData[select.value]) legendCrop = select.value;
-                    }
+                    if (selectedCrop && cropData[selectedCrop]) legendCrop = selectedCrop;
                     if (!legendCrop && cropSeasons.length > 0) legendCrop = cropSeasons[cropSeasons.length-1].crop;
                     if (!legendCrop) legendCrop = 'Tomato';
                     const baseColor = getCropSeasonColor(legendCrop).split(' ')[0];
                     return [
-                      <div key="germ" className="flex items-center gap-3"><span className={`w-5 h-5 rounded-full ${baseColor} opacity-30 border border-gray-300 shadow-sm`}></span><span className="font-medium text-gray-700">Germination</span></div>,
-                      <div key="veg" className="flex items-center gap-3"><span className={`w-5 h-5 rounded-full ${baseColor} opacity-50 border border-gray-300 shadow-sm`}></span><span className="font-medium text-gray-700">Vegetative</span></div>,
-                      <div key="flow" className="flex items-center gap-3"><span className={`w-5 h-5 rounded-full ${baseColor} opacity-70 border border-gray-300 shadow-sm`}></span><span className="font-medium text-gray-700">Flowering</span></div>,
-                      <div key="fruit" className="flex items-center gap-3"><span className={`w-5 h-5 rounded-full ${baseColor} opacity-90 border border-gray-300 shadow-sm`}></span><span className="font-medium text-gray-700">Fruiting</span></div>
+                      <div key="germ" className="flex items-center gap-3"><span className={`w-6 h-6 rounded-full ${baseColor} opacity-50 border-2 border-gray-300 shadow-sm`}></span><span className="font-medium text-gray-700">Germination</span></div>,
+                      <div key="veg" className="flex items-center gap-3"><span className={`w-6 h-6 rounded-full ${baseColor} opacity-70 border-2 border-gray-300 shadow-sm`}></span><span className="font-medium text-gray-700">Vegetative</span></div>,
+                      <div key="flow" className="flex items-center gap-3"><span className={`w-6 h-6 rounded-full ${baseColor} opacity-85 border-2 border-gray-300 shadow-sm`}></span><span className="font-medium text-gray-700">Flowering</span></div>,
+                      <div key="fruit" className="flex items-center gap-3"><span className={`w-6 h-6 rounded-full ${baseColor} opacity-95 border-2 border-gray-300 shadow-sm`}></span><span className="font-medium text-gray-700">Fruiting</span></div>
                     ];
                   })()}
                 </div>

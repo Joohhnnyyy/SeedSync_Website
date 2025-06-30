@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from "react";
 
-const PARTICLE_COUNT = 120;
+const getParticleCount = () => (typeof window !== 'undefined' && window.innerWidth < 640 ? 40 : 120);
+
 const PARTICLE_COLOR = "#000";
 const LINE_COLOR = "rgba(0,0,0,0.2)";
 const LINE_DISTANCE = 120;
@@ -19,6 +20,9 @@ const ParticleBackground: React.FC = () => {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+
+    // Use responsive particle count
+    const PARTICLE_COUNT = getParticleCount();
 
     // Initialize particles
     particles.current = Array.from({ length: PARTICLE_COUNT }, () => {
