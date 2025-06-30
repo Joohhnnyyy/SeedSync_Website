@@ -16,8 +16,8 @@ const MotivationSection = () => {
             Our Motivation
           </h2>
           
-          <Card className="border-0 shadow-2xl bg-white">
-            <CardContent className="p-12">
+          <Card className="border-0 shadow-2xl bg-white relative z-10">
+            <CardContent className="p-12 bg-white relative z-10">
               <blockquote className="text-xl md:text-2xl text-gray-700 leading-relaxed mb-8 italic font-light">
                 "SeedSync was born from a simple, powerful vision — to bridge the gap between 
                 technology and agriculture. In an era where data drives progress, we believe our 

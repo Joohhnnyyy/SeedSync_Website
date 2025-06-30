@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from "react";
 
-const getParticleCount = () => (typeof window !== 'undefined' && window.innerWidth < 640 ? 40 : 120);
+const getParticleCount = () => (typeof window !== 'undefined' && window.innerWidth < 640 ? 80 : 180);
 
 const PARTICLE_COLOR = "#000";
 const LINE_COLOR = "rgba(0,0,0,0.2)";
@@ -41,8 +41,13 @@ const ParticleBackground: React.FC = () => {
 
     // Handle resize
     const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      canvas.style.width = window.innerWidth + 'px';
+      canvas.style.height = window.innerHeight + 'px';
+      ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform
+      ctx.scale(dpr, dpr);
     };
     handleResize();
     window.addEventListener("resize", handleResize);
