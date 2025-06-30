@@ -57,7 +57,7 @@ const services: Service[] = [
     icon: Droplet,
     title: 'Irrigation Advice',
     description: 'Water management optimization based on crop needs and weather patterns.',
-    image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop',
+    image: '/service_images/irrigation_advisory.png',
     hasSplineBackground: true,
     route: '/irrigation-advice',
     video: '/irrigation_demo.mp4'
