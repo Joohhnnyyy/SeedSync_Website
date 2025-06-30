@@ -60,7 +60,7 @@ const services: Service[] = [
     image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&h=600&fit=crop',
     hasSplineBackground: true,
     route: '/irrigation-advice',
-    video: '/vid1.mp4'
+    video: '/irrigation_demo.mp4'
   },
   {
     icon: Upload,
