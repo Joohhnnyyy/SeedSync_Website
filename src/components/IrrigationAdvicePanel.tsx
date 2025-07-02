@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Droplet, ArrowLeft, Calendar, Cloud, Thermometer, Wind, Info, Clock, ChevronDown } from 'lucide-react';
+import { Droplet, ArrowLeft, Calendar, Cloud, Thermometer, Wind, Info, Clock, ChevronDown, ShieldCheck } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -17,6 +17,7 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { getWeatherData } from '@/utils/getWeather';
 import { getIrrigationAdviceFromGemini } from '../services/getIrrigationAdviceFromGemini';
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
 
 const locations = [
   // North India
@@ -458,59 +459,54 @@ export const IrrigationAdvicePanel = () => {
             </CardContent>
           </Card>
           {/* Right: Result Panel */}
-          <Card className="flex-1 max-w-xl mx-auto lg:mx-0 min-h-[500px] bg-white">
-            <CardHeader>
-              <CardTitle className="text-2xl font-bold flex items-center">
-                <Droplet className="mr-2" /> Irrigation Recommendation
-              </CardTitle>
-              <p className="text-gray-500 text-base mt-2">Your personalized irrigation recommendation will appear here.</p>
+          <Card className="flex-1 max-w-xl mx-auto lg:mx-0 min-h-[500px] bg-white p-8 shadow-md rounded-2xl">
+            <CardHeader className="mb-6">
+              <div className="flex items-center gap-4 mb-4">
+                <Droplet className="h-8 w-8 text-green-600" />
+                <CardTitle className="text-2xl font-bold">Irrigation Recommendation</CardTitle>
+              </div>
+              <span className="inline-block bg-green-100 text-green-800 text-xs font-semibold px-4 py-1 rounded-full mb-4">
+                AI Recommendation
+              </span>
+              <p className="text-gray-500 text-base mb-6">Your personalized irrigation recommendation will appear here.</p>
+              <div className="flex flex-wrap gap-x-10 gap-y-4 items-center justify-between bg-gray-50 rounded-lg p-6 mb-6">
+                <div className="flex items-center gap-3 min-w-[180px]">
+                  <Droplet className="h-6 w-6 text-blue-500" />
+                  <div>
+                    <div className="text-xs text-gray-500">Water Quantity</div>
+                    <div className="font-semibold text-lg text-gray-800">{recommendation?.waterQuantity || '--'}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 min-w-[180px]">
+                  <Calendar className="h-6 w-6 text-yellow-500" />
+                  <div>
+                    <div className="text-xs text-gray-500">Next Irrigation</div>
+                    <div className="font-semibold text-lg text-gray-800">{recommendation?.nextIrrigationDate || '--'}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 min-w-[180px]">
+                  <ShieldCheck className="h-6 w-6 text-green-500" />
+                  <div>
+                    <div className="text-xs text-gray-500">Confidence</div>
+                    <div className="font-semibold text-lg text-gray-800">{recommendation?.confidence || '--'}%</div>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-green-50 rounded-lg p-6 mb-6">
+                <div className="font-semibold text-gray-800 mb-2">Summary</div>
+                <div className="text-gray-700 text-base leading-relaxed">{recommendation?.summary || '--'}</div>
+              </div>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="details">
+                  <AccordionTrigger className="font-semibold text-gray-800">Details</AccordionTrigger>
+                  <AccordionContent>
+                    <div className="text-gray-700 text-base leading-relaxed whitespace-pre-line">
+                      {recommendation?.details?.reasoning || '--'}
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </CardHeader>
-            <CardContent>
-              {!recommendation ? (
-                <div className="flex flex-col items-center justify-center min-h-[400px]">
-                  <Droplet className="h-16 w-16 text-green-400 mb-4" />
-                  <h2 className="text-2xl font-semibold mb-2">No recommendation yet</h2>
-                  <p className="text-gray-500 text-center max-w-xs">
-                    Enter your field data on the left and click <span className="font-semibold">Get Irrigation Advice</span> to see the best water management plan for your field!
-                  </p>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center">
-                  <div className="w-full bg-green-50 border-l-4 border-green-200 text-green-700 p-4 mb-6 rounded-r-lg" role="alert">
-                    <p className="font-bold">AI Recommendation</p>
-                    <p>Water Quantity: {recommendation.waterQuantity}</p>
-                    <p>Next Irrigation: {recommendation.nextIrrigationDate}</p>
-                    <p>Confidence: {(() => {
-                      let confidenceValue = parseFloat(String(recommendation.confidence).replace(/%+$/, ''));
-                      if (!isNaN(confidenceValue)) {
-                        if (confidenceValue > 0 && confidenceValue <= 1) {
-                          confidenceValue = confidenceValue * 100;
-                        }
-                        confidenceValue = Math.round(confidenceValue);
-                      }
-                      return (
-                        isNaN(confidenceValue) ? 'N/A' : confidenceValue + '%'
-                      );
-                    })()}</p>
-                  </div>
-                  <div className="w-full space-y-6">
-                    <div className="text-center">
-                      <h3 className="text-3xl font-bold text-gray-900 mb-3">Summary</h3>
-                      <p className="text-gray-600 text-lg leading-relaxed">{recommendation.summary}</p>
-                    </div>
-                    <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
-                      <h4 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Details</h4>
-                      <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-1.5 h-1.5 mt-2 rounded-full bg-green-500"></div>
-                        <div>
-                          <p className="text-gray-600 leading-relaxed">{recommendation.details.reasoning}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </CardContent>
           </Card>
         </div>
       </div>
