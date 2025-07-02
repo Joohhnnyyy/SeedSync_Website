@@ -44,21 +44,15 @@ const ResultSection = ({ title, text }: { title: string; text: string }) => {
                                riskLevel === 'Medium' ? 'text-yellow-600' : 'text-green-600';
               
               return (
-                <div key={index} className="flex items-start">
-                  <span className="w-1.5 h-1.5 mt-2 mr-3 rounded-full bg-emerald-500 flex-shrink-0" />
-                  <span className="text-gray-700">
-                    <strong className="font-semibold">{riskText.trim()}</strong>
-                    <span className={`font-medium ${riskColor}`}> ({riskLevel} Risk)</span>
-                  </span>
-                </div>
+                <span key={index} className="text-gray-700">
+                  <strong className="font-semibold">{riskText.trim()}</strong>
+                  <span className={`font-medium ${riskColor}`}> ({riskLevel} Risk)</span>
+                </span>
               );
             }
             
             return (
-              <div key={index} className="flex items-start">
-                <span className="w-1.5 h-1.5 mt-2 mr-3 rounded-full bg-emerald-500 flex-shrink-0" />
-                <span className="text-gray-700">{trimmedPart}</span>
-              </div>
+              <span key={index} className="text-gray-700">{trimmedPart}</span>
             );
           })}
         </div>
