@@ -12,6 +12,9 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { cropVarieties, regions } from '@/lib/cropData';
 import { apiUrl } from "../lib/utils";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 const ResultSection = ({ title, text }: { title: string; text: string }) => {
   const renderLineWithBold = (lineContent: string) => {
@@ -121,6 +124,10 @@ const PestDiseasePredictionNew = () => {
   const [error, setError] = useState<string | null>(null);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [sliderActive, setSliderActive] = useState<string | null>(null);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   const cropOptions = Object.keys(cropVarieties);
   const soilTypes = ['Loamy', 'Sandy', 'Clayey', 'Silty', 'Black'];
@@ -192,6 +199,41 @@ const PestDiseasePredictionNew = () => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownload = () => {
+    if (!result) return;
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text('Pest & Disease Prediction Report', 14, 18);
+    doc.setFontSize(12);
+    doc.text('Likely Pests or Diseases:', 14, 30);
+    doc.text(doc.splitTextToSize(result.likelyPests, 180), 14, 38);
+    doc.text('Symptoms to Watch For:', 14, 60);
+    doc.text(doc.splitTextToSize(result.symptoms, 180), 14, 68);
+    doc.text('Preventive Measures:', 14, 90);
+    doc.text(doc.splitTextToSize(result.preventiveMeasures, 180), 14, 98);
+    doc.save('pest-disease-prediction-report.pdf');
+  };
+
+  const handleSendEmail = async () => {
+    setEmailStatus('sending');
+    setEmailError(null);
+    try {
+      const response = await fetch(apiUrl('/api/pest-disease/send-email'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, result }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to send email.');
+      }
+      setEmailStatus('sent');
+    } catch (err: any) {
+      setEmailStatus('error');
+      setEmailError(err.message || 'An error occurred.');
     }
   };
 
@@ -392,8 +434,30 @@ const PestDiseasePredictionNew = () => {
                   <ResultSection title="Symptoms to Watch For" text={result.symptoms} />
                   <ResultSection title="Preventive Measures" text={result.preventiveMeasures} />
                   <div className="pt-4 border-t border-gray-200 flex flex-wrap gap-2 justify-start">
-                    <Button variant="outline" size="sm" className="flex items-center"><Download className="mr-2 h-4 w-4" />Download Report</Button>
-                    <Button variant="outline" size="sm" className="flex items-center"><Share2 className="mr-2 h-4 w-4" />Share Results</Button>
+                    <Button variant="outline" size="sm" className="flex items-center" onClick={handleDownload} disabled={!result}>
+                      <Download className="mr-2 h-4 w-4" />Download Report
+                    </Button>
+                    <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="flex items-center" onClick={() => setEmailDialogOpen(true)} disabled={!result}>
+                          <Share2 className="mr-2 h-4 w-4" />Share Results
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Share Results via Email</DialogTitle>
+                        </DialogHeader>
+                        <div className="py-2">
+                          <Label htmlFor="email">Recipient Email</Label>
+                          <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="recipient@example.com" className="mt-2 mb-4" />
+                          <Button onClick={handleSendEmail} disabled={emailStatus === 'sending' || !email} className="w-full">
+                            {emailStatus === 'sending' ? 'Sending...' : 'Send Email'}
+                          </Button>
+                          {emailStatus === 'sent' && <p className="text-green-600 mt-2">Email sent successfully!</p>}
+                          {emailStatus === 'error' && <p className="text-red-600 mt-2">{emailError}</p>}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
               )}
