@@ -20,6 +20,14 @@ interface ProfileData {
   location: string;
 }
 
+const backendBaseUrl = "https://backed-23ow.onrender.com"; // <-- Updated backend URL
+function getFullImageUrl(imageUrl: string | null) {
+  if (imageUrl && imageUrl.startsWith("/uploads/")) {
+    return backendBaseUrl + imageUrl;
+  }
+  return imageUrl;
+}
+
 const Profile = () => {
   const navigate = useNavigate();
   const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -371,7 +379,7 @@ const Profile = () => {
                       {profileImage && !imageLoadError ? (
                         <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full overflow-hidden border-4 border-gray-200">
                           <img 
-                            src={profileImage} 
+                            src={getFullImageUrl(profileImage)} 
                             alt="Profile" 
                             className="w-full h-full object-cover"
                             onError={() => setImageLoadError(true)}
