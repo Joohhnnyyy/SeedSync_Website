@@ -8,8 +8,37 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Link } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
+import React from 'react';
 
 const Contact = () => {
+  const { toast } = useToast();
+  const [form, setForm] = React.useState({ name: '', email: '', message: '' });
+  const [loading, setLoading] = React.useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.email.trim() || !form.message.trim()) {
+      toast({ title: 'All fields are required', variant: 'destructive' });
+      return;
+    }
+    setLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(res => setTimeout(res, 1000));
+      setForm({ name: '', email: '', message: '' });
+      toast({ title: 'Thank you for reaching out!', description: 'We will surely get in touch with you soon.', variant: 'black' });
+    } catch (err) {
+      toast({ title: 'Failed to send message', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Navigation />
@@ -53,38 +82,49 @@ const Contact = () => {
                   </CardHeader>
                   
                   <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Name</Label>
-                      <Input 
-                        id="name" 
-                        type="text" 
-                        placeholder="Your full name"
-                        className="h-12 bg-gray-100 border-gray-300 placeholder-gray-700"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email</Label>
-                      <Input 
-                        id="email" 
-                        type="email" 
-                        placeholder="Your email address"
-                        className="h-12 bg-gray-100 border-gray-300 placeholder-gray-700"
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="message">Message</Label>
-                      <Textarea 
-                        id="message" 
-                        placeholder="Tell us how we can help you..."
-                        className="min-h-[120px] resize-none bg-gray-100 border-gray-300 placeholder-gray-700"
-                      />
-                    </div>
-                    
-                    <Button className="w-full h-12 bg-black text-white hover:bg-gray-800">
-                      Send Message
-                    </Button>
+                    <form onSubmit={handleSubmit}>
+                      <div className="space-y-2">
+                        <Label htmlFor="name">Name</Label>
+                        <Input 
+                          id="name" 
+                          type="text" 
+                          placeholder="Your full name"
+                          className="h-12 bg-gray-100 border-gray-300 placeholder-gray-700"
+                          value={form.name}
+                          onChange={handleChange}
+                          disabled={loading}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input 
+                          id="email" 
+                          type="email" 
+                          placeholder="Your email address"
+                          className="h-12 bg-gray-100 border-gray-300 placeholder-gray-700"
+                          value={form.email}
+                          onChange={handleChange}
+                          disabled={loading}
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="message">Message</Label>
+                        <Textarea 
+                          id="message" 
+                          placeholder="Tell us how we can help you..."
+                          className="min-h-[120px] resize-none bg-gray-100 border-gray-300 placeholder-gray-700"
+                          value={form.message}
+                          onChange={handleChange}
+                          disabled={loading}
+                        />
+                      </div>
+                      
+                      <Button type="submit" className="w-full h-12 bg-black text-white hover:bg-gray-800" disabled={loading}>
+                        {loading ? 'Sending...' : 'Send Message'}
+                      </Button>
+                    </form>
                   </CardContent>
                 </Card>
               </motion.div>
