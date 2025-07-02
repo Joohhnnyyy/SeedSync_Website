@@ -14,6 +14,8 @@ import Navigation from '@/components/Navigation';
 import Footer from '@/components/Footer';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { apiUrl } from "../lib/utils";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const CropRotationPlanner = () => {
   const navigate = useNavigate();
@@ -37,6 +39,10 @@ const CropRotationPlanner = () => {
   const [error, setError] = useState<string | null>(null);
   const [focusedField, setFocusedField] = useState<string | null>(null);
   const [sliderActive, setSliderActive] = useState<string | null>(null);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [email, setEmail] = useState('');
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [emailError, setEmailError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -105,6 +111,48 @@ const CropRotationPlanner = () => {
       console.error("API call failed:", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownload = () => {
+    if (!recommendation) return;
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text('Crop Rotation Recommendation', 14, 18);
+    doc.setFontSize(12);
+    doc.text(`Recommended Next Crop: ${recommendation.nextCrop}`, 14, 30);
+    doc.text('Justification:', 14, 40);
+    doc.text(doc.splitTextToSize(recommendation.justification, 180), 14, 48);
+    doc.text('Key Advantages:', 14, 70);
+    recommendation.advantages.forEach((adv, i) => {
+      doc.text(`- ${adv}`, 18, 78 + i * 8);
+    });
+    if (recommendation.rotationPlan) {
+      doc.text('Suggested 3-Season Plan:', 14, 100);
+      recommendation.rotationPlan.forEach((step, i) => {
+        doc.text(`${i + 1}. ${step}`, 18, 108 + i * 8);
+      });
+    }
+    doc.save('crop-rotation-recommendation.pdf');
+  };
+
+  const handleSendEmail = async () => {
+    setEmailStatus('sending');
+    setEmailError(null);
+    try {
+      const response = await fetch(apiUrl('/api/rotation/send-email'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, recommendation }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to send email.');
+      }
+      setEmailStatus('sent');
+    } catch (err: any) {
+      setEmailStatus('error');
+      setEmailError(err.message || 'An error occurred.');
     }
   };
 
@@ -469,8 +517,30 @@ const CropRotationPlanner = () => {
                         </div>
                       </DialogContent>
                     </Dialog>
-                    <Button variant="outline" size="sm" className="flex items-center"><Download className="mr-2 h-4 w-4" />Download</Button>
-                    <Button variant="outline" size="sm" className="flex items-center"><Mail className="mr-2 h-4 w-4" />Email</Button>
+                    <Button variant="outline" size="sm" className="flex items-center" onClick={handleDownload} disabled={!recommendation}>
+                      <Download className="mr-2 h-4 w-4" />Download
+                    </Button>
+                    <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="flex items-center" onClick={() => setEmailDialogOpen(true)} disabled={!recommendation}>
+                          <Mail className="mr-2 h-4 w-4" />Email
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Share Recommendation via Email</DialogTitle>
+                        </DialogHeader>
+                        <div className="py-2">
+                          <Label htmlFor="email">Recipient Email</Label>
+                          <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="recipient@example.com" className="mt-2 mb-4" />
+                          <Button onClick={handleSendEmail} disabled={emailStatus === 'sending' || !email} className="w-full">
+                            {emailStatus === 'sending' ? 'Sending...' : 'Send Email'}
+                          </Button>
+                          {emailStatus === 'sent' && <p className="text-green-600 mt-2">Email sent successfully!</p>}
+                          {emailStatus === 'error' && <p className="text-red-600 mt-2">{emailError}</p>}
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                   </div>
                 </div>
               )}
