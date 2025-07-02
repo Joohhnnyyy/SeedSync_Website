@@ -48,6 +48,8 @@ const ImageUpload = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+
   // Helper functions to extract and format sections from Gemini response
   const formatGeminiText = (text: string) => {
     return text
@@ -468,9 +470,11 @@ const ImageUpload = () => {
                     <div
                       {...getRootProps()}
                       className={`border-2 border-dashed rounded-lg p-6 sm:p-12 text-center cursor-pointer transition-colors
-                        ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'}`}
+                        ${isDragActive || focusedField === 'dropzone' ? 'ring-2 ring-green-500 border-green-500' : 'border-gray-300 hover:border-gray-400'}`}
+                      onFocus={() => setFocusedField('dropzone')}
+                      onBlur={() => setFocusedField(null)}
                     >
-                      <input {...getInputProps()} />
+                      <input {...getInputProps()} onFocus={() => setFocusedField('fileInput')} onBlur={() => setFocusedField(null)} className={`${focusedField === 'fileInput' ? 'ring-2 ring-green-500 border-green-500' : ''}`} />
                       <Upload className="mx-auto h-8 w-8 sm:h-12 sm:w-12 text-gray-400 mb-3 sm:mb-4" />
                       <p className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                         {isDragActive ? 'Drop the image here' : 'Drag & drop an image here'}

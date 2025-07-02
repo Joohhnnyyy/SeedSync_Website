@@ -199,6 +199,8 @@ export const IrrigationAdvicePanel = () => {
   const [selectedLocation, setSelectedLocation] = useState('Noida');
   const [weather, setWeather] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [sliderActive, setSliderActive] = useState<string | null>(null);
 
   const cropOptions = [
     'Wheat', 'Rice', 'Maize', 'Cotton', 'Sugarcane', 'Vegetables', 'Fruits',
@@ -313,303 +315,203 @@ export const IrrigationAdvicePanel = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navigation />
-      {/* Weather Banner */}
-      <div className="bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-3 sm:px-6 mt-16">
-        <div className="max-w-7xl mx-auto flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center">
-          <div className="flex flex-wrap items-center gap-4 sm:gap-6">
-            {weather ? (
-              <>
-                <div className="flex items-center">
-                  <Thermometer className="h-5 w-5 mr-2" />
-                  <span>{weather.temperature}°C</span>
-                </div>
-                <div className="flex items-center">
-                  <Droplet className="h-5 w-5 mr-2" />
-                  <span>{weather.humidity}%</span>
-                </div>
-                <div className="flex items-center">
-                  <Cloud className="h-5 w-5 mr-2" />
-                  <span>{weather.description}</span>
-                </div>
-                <div className="flex items-center">
-                  <Wind className="h-5 w-5 mr-2" />
-                  <span>{weather.windSpeed} m/s</span>
-                </div>
-              </>
-            ) : error ? (
-              <div className="flex items-center text-white/90">
-                <Info className="h-5 w-5 mr-2" />
-                <span>{error}</span>
-              </div>
-            ) : (
-              <div className="animate-pulse flex items-center space-x-6">
-                <div className="h-5 w-20 bg-white/20 rounded"></div>
-                <div className="h-5 w-20 bg-white/20 rounded"></div>
-                <div className="h-5 w-20 bg-white/20 rounded"></div>
-                <div className="h-5 w-20 bg-white/20 rounded"></div>
-              </div>
-            )}
-          </div>
+      <div className="pt-20 py-12 px-4 sm:px-6 lg:px-8 flex flex-col items-center">
+        <div className="w-full max-w-6xl">
+          <Button
+            variant="ghost"
+            className="mb-6 flex items-center text-gray-600 hover:text-gray-900"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back
+          </Button>
+        </div>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="text-center mb-10"
+        >
+          <Droplet className="mx-auto h-16 w-16 text-green-600 mb-4" />
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Irrigation Advice</h1>
+          <p className="text-gray-600 text-lg">Smart AI-powered water management suggestions based on crop, soil, and weather data</p>
           {weather && (
-            <div className="text-sm">
-              Last updated: {weather.lastUpdated}
+            <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
+              <div className="flex items-center"><Thermometer className="h-5 w-5 mr-2" /><span>{weather.temperature}°C</span></div>
+              <div className="flex items-center"><Droplet className="h-5 w-5 mr-2" /><span>{weather.humidity}%</span></div>
+              <div className="flex items-center"><Cloud className="h-5 w-5 mr-2" /><span>{weather.description}</span></div>
+              <div className="flex items-center"><Wind className="h-5 w-5 mr-2" /><span>{weather.windSpeed} m/s</span></div>
+              <div className="text-sm">Last updated: {weather.lastUpdated}</div>
             </div>
           )}
-        </div>
-      </div>
-
-      <div className="pt-8 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className="flex flex-col sm:flex-row items-start sm:items-center mb-6 sm:mb-8 gap-4 sm:gap-0">
-            <Button
-              variant="ghost"
-              onClick={() => navigate(-1)}
-              className="mr-0 sm:mr-4 self-start sm:self-auto"
-            >
-              <ArrowLeft className="h-5 w-5 mr-1" />
-              Back
-            </Button>
-            <div className="flex-1">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Irrigation Advice</h1>
-              <p className="text-sm sm:text-base text-gray-600 mt-2">
-                Smart AI-powered water management suggestions based on crop, soil, and weather data
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 lg:gap-8">
-            {/* Input Form */}
-            <Card className="shadow-lg">
-              <CardHeader>
-                <CardTitle className="text-xl sm:text-2xl font-bold flex items-center">
-                  <Droplet className="mr-2 h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
-                  Irrigation Parameters
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="cropType">Crop Type</Label>
-                    <Select
-                      value={formData.cropType}
-                      onValueChange={(value) => handleChange('cropType', value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select crop type" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60 overflow-y-auto">
-                        {cropOptions.map((crop) => (
-                          <SelectItem key={crop} value={crop}>
-                            {crop}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="soilType">Soil Type</Label>
-                    <Select
-                      value={formData.soilType}
-                      onValueChange={(value) => handleChange('soilType', value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select soil type" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60 overflow-y-auto">
-                        {soilOptions.map((soil) => (
-                          <SelectItem key={soil} value={soil}>
-                            {soil}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="region">Region / Location</Label>
-                    <Select
-                      value={formData.region}
-                      onValueChange={(value) => handleChange('region', value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select location" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {locations.map((location) => (
-                          <SelectItem key={location.value} value={location.value}>
-                            {location.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="growthStage">Growth Stage</Label>
-                    <Select
-                      value={formData.growthStage}
-                      onValueChange={(value) => handleChange('growthStage', value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select growth stage" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {growthStageOptions.map((stage) => (
-                          <SelectItem key={stage} value={stage}>
-                            {stage}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="soilMoisture">Soil Moisture: {formData.soilMoisture}%</Label>
-                    <Slider
-                      value={[formData.soilMoisture]}
-                      onValueChange={(value) => handleChange('soilMoisture', value[0])}
-                      min={0}
-                      max={100}
-                      step={1}
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="lastIrrigationDate">Last Irrigation Date</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="w-full justify-start text-left font-normal"
-                        >
-                          <Calendar className="mr-2 h-4 w-4" />
-                          {formData.lastIrrigationDate ? (
-                            format(formData.lastIrrigationDate, 'PPP')
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <CalendarComponent
-                          mode="single"
-                          selected={formData.lastIrrigationDate}
-                          onSelect={(date) => handleChange('lastIrrigationDate', date || new Date())}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                  </div>
-
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Generating Advice...' : 'Get Irrigation Advice'}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-
-            {/* Output Section */}
-            {recommendation && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Card className="shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="text-xl sm:text-2xl font-bold flex items-center">
-                      <Droplet className="mr-2 h-5 w-5 sm:h-6 sm:w-6 text-green-500" />
-                      AI Recommendation
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-6">
-                    <div className="bg-green-50 p-4 rounded-lg">
-                      <h3 className="text-xl font-semibold text-green-800 mb-2">
-                        Water Quantity: {recommendation.waterQuantity}
-                      </h3>
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center text-green-700 gap-2 sm:gap-0">
-                        <Clock className="h-5 w-5 mr-0 sm:mr-2 flex-shrink-0" />
-                        <span className="text-sm sm:text-base">
-                          Next irrigation: {
-                            recommendation.nextIrrigationDate && !isNaN(Date.parse(recommendation.nextIrrigationDate))
-                              ? format(new Date(recommendation.nextIrrigationDate), 'PPP')
-                              : recommendation.nextIrrigationDate
-                          }
-                        </span>
-                      </div>
-                      <div className="mt-2 text-sm text-green-600">
-                        Confidence: {(() => {
-                          let confidenceValue = parseFloat(String(recommendation.confidence).replace(/%+$/, ''));
-                          if (!isNaN(confidenceValue)) {
-                            if (confidenceValue > 0 && confidenceValue <= 1) {
-                              confidenceValue = confidenceValue * 100;
-                            }
-                            confidenceValue = Math.round(confidenceValue);
-                          }
-                          return (
-                            isNaN(confidenceValue) ? 'N/A' : confidenceValue + '%'
-                          );
-                        })()}
-                      </div>
-                    </div>
-
-                    <p className="text-gray-700">{recommendation.summary}</p>
-
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" className="w-full">
-                          <Info className="mr-2 h-4 w-4" />
-                          Why this recommendation?
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Detailed Analysis</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4">
-                          <div>
-                            <h4 className="font-semibold">Crop Water Needs</h4>
-                            <p>{recommendation.details.cropWaterNeeds}</p>
-                          </div>
-                          <div>
-                            <h4 className="font-semibold">Expected Rainfall</h4>
-                            <p>{recommendation.details.expectedRainfall}</p>
-                          </div>
-                          <div>
-                            <h4 className="font-semibold">Soil Retention</h4>
-                            <p>{recommendation.details.soilRetention}</p>
-                          </div>
-                          <div>
-                            <h4 className="font-semibold">Reasoning</h4>
-                            <p>{recommendation.details.reasoning}</p>
-                          </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-
-                    {/* Recommendation History Placeholder */}
-                    <div className="mt-6">
-                      <h3 className="text-lg font-semibold mb-3">Recent Recommendations</h3>
-                      <div className="space-y-3">
-                        {recommendationHistory.length === 0 ? (
-                          <div className="text-gray-500">No recommendations yet.</div>
+        </motion.div>
+        <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Left: Form */}
+          <Card className="flex-1 max-w-xl mx-auto lg:mx-0 bg-white">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold flex items-center">
+                <Droplet className="mr-2" /> Irrigation Parameters
+              </CardTitle>
+              <p className="text-gray-500 text-base mt-2">Fill in your field's details for a smart irrigation suggestion.</p>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit}>
+                {/* Crop Type */}
+                <div className="mb-6">
+                  <Label htmlFor="cropType" className="font-semibold">Crop Type</Label>
+                  <Select value={formData.cropType} onValueChange={(value) => handleChange('cropType', value)}>
+                    <SelectTrigger className={`w-full ${focusedField === 'cropType' ? 'ring-2 ring-green-500 border-green-500' : ''}`} onFocus={() => setFocusedField('cropType')} onBlur={() => setFocusedField(null)}>
+                      <SelectValue placeholder="Select crop type" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60 overflow-y-auto">
+                      {cropOptions.map((crop) => (
+                        <SelectItem key={crop} value={crop}>{crop}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Soil Type */}
+                <div className="mb-6">
+                  <Label htmlFor="soilType" className="font-semibold">Soil Type</Label>
+                  <Select value={formData.soilType} onValueChange={(value) => handleChange('soilType', value)}>
+                    <SelectTrigger className={`w-full ${focusedField === 'soilType' ? 'ring-2 ring-green-500 border-green-500' : ''}`} onFocus={() => setFocusedField('soilType')} onBlur={() => setFocusedField(null)}>
+                      <SelectValue placeholder="Select soil type" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60 overflow-y-auto">
+                      {soilOptions.map((soil) => (
+                        <SelectItem key={soil} value={soil}>{soil}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Region */}
+                <div className="mb-6">
+                  <Label htmlFor="region" className="font-semibold">Region / Location</Label>
+                  <Select value={formData.region} onValueChange={(value) => handleChange('region', value)}>
+                    <SelectTrigger className={`w-full ${focusedField === 'region' ? 'ring-2 ring-green-500 border-green-500' : ''}`} onFocus={() => setFocusedField('region')} onBlur={() => setFocusedField(null)}>
+                      <SelectValue placeholder="Select location" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60 overflow-y-auto">
+                      {locations.map((location) => (
+                        <SelectItem key={location.value} value={location.value}>{location.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Growth Stage */}
+                <div className="mb-6">
+                  <Label htmlFor="growthStage" className="font-semibold">Growth Stage</Label>
+                  <Select value={formData.growthStage} onValueChange={(value) => handleChange('growthStage', value)}>
+                    <SelectTrigger className={`w-full ${focusedField === 'growthStage' ? 'ring-2 ring-green-500 border-green-500' : ''}`} onFocus={() => setFocusedField('growthStage')} onBlur={() => setFocusedField(null)}>
+                      <SelectValue placeholder="Select growth stage" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60 overflow-y-auto">
+                      {growthStageOptions.map((stage) => (
+                        <SelectItem key={stage} value={stage}>{stage}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {/* Soil Moisture */}
+                <div className="mb-6">
+                  <Label htmlFor="soilMoisture">Soil Moisture: {formData.soilMoisture}%</Label>
+                  <Slider
+                    value={[formData.soilMoisture]}
+                    onValueChange={(value) => handleChange('soilMoisture', value[0])}
+                    min={0}
+                    max={100}
+                    step={1}
+                    className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'soilMoisture' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                    onPointerDown={() => setSliderActive('soilMoisture')}
+                    onPointerUp={() => setSliderActive(null)}
+                    onBlur={() => setSliderActive(null)}
+                  />
+                </div>
+                {/* Last Irrigation Date */}
+                <div className="mb-6">
+                  <Label htmlFor="lastIrrigationDate" className="font-semibold">Last Irrigation Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="w-full justify-start text-left font-normal">
+                        <Calendar className="mr-2 h-4 w-4" />
+                        {formData.lastIrrigationDate ? (
+                          format(formData.lastIrrigationDate, 'PPP')
                         ) : (
-                          recommendationHistory.map((rec, idx) => (
-                            <div key={idx} className="bg-gray-50 p-3 rounded-lg">
-                              <div className="text-sm text-gray-500">{rec.date}</div>
-                              <div className="font-medium">{rec.waterQuantity}</div>
-                            </div>
-                          ))
+                          <span>Pick a date</span>
                         )}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <CalendarComponent
+                        mode="single"
+                        selected={formData.lastIrrigationDate}
+                        onSelect={(date) => handleChange('lastIrrigationDate', date || new Date())}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <Button type="submit" className="bg-black text-white hover:bg-gray-800 w-full md:w-auto" disabled={isLoading}>
+                  {isLoading ? 'Generating Advice...' : 'Get Irrigation Advice'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+          {/* Right: Result Panel */}
+          <Card className="flex-1 max-w-xl mx-auto lg:mx-0 min-h-[500px] bg-white">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold flex items-center">
+                <Droplet className="mr-2" /> Irrigation Recommendation
+              </CardTitle>
+              <p className="text-gray-500 text-base mt-2">Your personalized irrigation recommendation will appear here.</p>
+            </CardHeader>
+            <CardContent>
+              {!recommendation ? (
+                <div className="flex flex-col items-center justify-center min-h-[400px]">
+                  <Droplet className="h-16 w-16 text-green-400 mb-4" />
+                  <h2 className="text-2xl font-semibold mb-2">No recommendation yet</h2>
+                  <p className="text-gray-500 text-center max-w-xs">
+                    Enter your field data on the left and click <span className="font-semibold">Get Irrigation Advice</span> to see the best water management plan for your field!
+                  </p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center">
+                  <div className="w-full bg-green-50 border-l-4 border-green-200 text-green-700 p-4 mb-6 rounded-r-lg" role="alert">
+                    <p className="font-bold">AI Recommendation</p>
+                    <p>Water Quantity: {recommendation.waterQuantity}</p>
+                    <p>Next Irrigation: {recommendation.nextIrrigationDate}</p>
+                    <p>Confidence: {(() => {
+                      let confidenceValue = parseFloat(String(recommendation.confidence).replace(/%+$/, ''));
+                      if (!isNaN(confidenceValue)) {
+                        if (confidenceValue > 0 && confidenceValue <= 1) {
+                          confidenceValue = confidenceValue * 100;
+                        }
+                        confidenceValue = Math.round(confidenceValue);
+                      }
+                      return (
+                        isNaN(confidenceValue) ? 'N/A' : confidenceValue + '%'
+                      );
+                    })()}</p>
+                  </div>
+                  <div className="w-full space-y-6">
+                    <div className="text-center">
+                      <h3 className="text-3xl font-bold text-gray-900 mb-3">Summary</h3>
+                      <p className="text-gray-600 text-lg leading-relaxed">{recommendation.summary}</p>
+                    </div>
+                    <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                      <h4 className="text-xl font-semibold text-gray-900 mb-4 pb-2 border-b border-gray-200">Details</h4>
+                      <div className="flex items-start space-x-3">
+                        <div className="flex-shrink-0 w-1.5 h-1.5 mt-2 rounded-full bg-green-500"></div>
+                        <div>
+                          <p className="text-gray-600 leading-relaxed">{recommendation.details.reasoning}</p>
+                        </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-          </div>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
       </div>
       <Footer />

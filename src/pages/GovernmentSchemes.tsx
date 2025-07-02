@@ -58,6 +58,7 @@ const GovernmentSchemes = () => {
   const [allSchemeTypes, setAllSchemeTypes] = useState<string[]>([]);
   const isMounted = React.useRef(false);
   const ITEMS_PER_PAGE = 8; // Increased items per page for the new layout
+  const [focusedField, setFocusedField] = useState<string | null>(null);
 
   const fetchSchemes = async (isInitialLoad = false) => {
     try {
@@ -164,13 +165,15 @@ const GovernmentSchemes = () => {
                 placeholder="Search by keyword..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                onFocus={() => setFocusedField('searchQuery')}
+                onBlur={() => setFocusedField(null)}
+                className={`pl-10 ${focusedField === 'searchQuery' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
               />
             </div>
                 </div>
           <div className="flex items-center gap-4 w-full md:w-auto">
                   <Select onValueChange={(value) => handleFilterChange('schemeType', value)}>
-              <SelectTrigger className="w-full md:w-[180px] border-gray-200">
+              <SelectTrigger className={`w-full md:w-[180px] border-gray-200 ${focusedField === 'schemeType' ? 'ring-2 ring-green-500 border-green-500' : ''}`} onFocus={() => setFocusedField('schemeType')} onBlur={() => setFocusedField(null)}>
                 <SelectValue placeholder="Scheme Type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -181,7 +184,7 @@ const GovernmentSchemes = () => {
                     </SelectContent>
                   </Select>
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full md:w-[180px] border-gray-200">
+              <SelectTrigger className={`w-full md:w-[180px] border-gray-200 ${focusedField === 'sortBy' ? 'ring-2 ring-green-500 border-green-500' : ''}`} onFocus={() => setFocusedField('sortBy')} onBlur={() => setFocusedField(null)}>
                 <SelectValue placeholder="Sort by" />
                     </SelectTrigger>
                     <SelectContent>

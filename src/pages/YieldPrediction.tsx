@@ -33,6 +33,8 @@ const YieldPrediction = () => {
   } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [sliderActive, setSliderActive] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -138,7 +140,8 @@ const YieldPrediction = () => {
                   <div className="mb-6">
                     <Label htmlFor="crop" className="font-semibold">Crop Type </Label>
                     <Select name="crop" onValueChange={(value) => handleSelectChange('crop', value)}>
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className={`w-full ${focusedField === 'crop' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                    onFocus={() => setFocusedField('crop')} onBlur={() => setFocusedField(null)}>
                         <SelectValue placeholder="Select your crop" />
                   </SelectTrigger>
                   <SelectContent>
@@ -203,7 +206,8 @@ const YieldPrediction = () => {
                   <div className="mb-6">
                     <Label htmlFor="state" className="font-semibold">State </Label>
                     <Select name="state" onValueChange={(value) => handleSelectChange('state', value)}>
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className={`w-full ${focusedField === 'state' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                    onFocus={() => setFocusedField('state')} onBlur={() => setFocusedField(null)}>
                         <SelectValue placeholder="Select state" />
                   </SelectTrigger>
                   <SelectContent>
@@ -243,7 +247,8 @@ const YieldPrediction = () => {
                   <div className="mb-6">
                     <Label htmlFor="season" className="font-semibold">Season </Label>
                     <Select name="season" onValueChange={(value) => handleSelectChange('season', value)}>
-                  <SelectTrigger className="w-full">
+                  <SelectTrigger className={`w-full ${focusedField === 'season' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                    onFocus={() => setFocusedField('season')} onBlur={() => setFocusedField(null)}>
                         <SelectValue placeholder="Select season" />
                   </SelectTrigger>
                   <SelectContent>
@@ -268,7 +273,10 @@ const YieldPrediction = () => {
                       min={300.30}
                       max={6560.70}
                       step={0.01}
-                      className="[&>span:first-child]:bg-gray-200"
+                      className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'rainfall' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                      onPointerDown={() => setSliderActive('rainfall')}
+                      onPointerUp={() => setSliderActive(null)}
+                      onBlur={() => setSliderActive(null)}
                     />
               </div>
                   <div className="mb-6">
@@ -279,7 +287,10 @@ const YieldPrediction = () => {
                       min={94}
                       max={190}
                       step={1}
-                      className="[&>span:first-child]:bg-gray-200"
+                      className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'fertilizer' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                      onPointerDown={() => setSliderActive('fertilizer')}
+                      onPointerUp={() => setSliderActive(null)}
+                      onBlur={() => setSliderActive(null)}
                     />
               </div>
                   <div className="mb-6">
@@ -290,7 +301,10 @@ const YieldPrediction = () => {
                       min={0.1}
                       max={0.38}
                       step={0.01}
-                      className="[&>span:first-child]:bg-gray-200"
+                      className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'pesticide' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                      onPointerDown={() => setSliderActive('pesticide')}
+                      onPointerUp={() => setSliderActive(null)}
+                      onBlur={() => setSliderActive(null)}
                     />
               </div>
               </div>

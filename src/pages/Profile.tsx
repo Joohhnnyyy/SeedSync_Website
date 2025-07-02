@@ -551,7 +551,7 @@ const Profile = () => {
                       </Button>
                       <Button 
                         variant="destructive" 
-                        className="w-full sm:w-auto sm:ml-auto"
+                        className="w-full sm:w-auto sm:ml-auto text-white"
                         onClick={confirmLogout}
                         disabled={isSaving}
                       >

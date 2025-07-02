@@ -125,6 +125,8 @@ const PestDiseasePredictionNew = () => {
   } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [sliderActive, setSliderActive] = useState<string | null>(null);
 
   const cropOptions = Object.keys(cropVarieties);
   const soilTypes = ['Loamy', 'Sandy', 'Clayey', 'Silty', 'Black'];
@@ -230,7 +232,10 @@ const PestDiseasePredictionNew = () => {
                     <div className="space-y-2">
                       <Label htmlFor="crop">Crop Type</Label>
                       <Select name="crop" onValueChange={(value) => handleSelectChange('crop', value)}>
-                        <SelectTrigger><SelectValue placeholder="Select crop" /></SelectTrigger>
+                        <SelectTrigger className={`w-full ${focusedField === 'crop' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                          onFocus={() => setFocusedField('crop')} onBlur={() => setFocusedField(null)}>
+                          <SelectValue placeholder="Select crop" />
+                        </SelectTrigger>
                         <SelectContent>{cropOptions.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
@@ -242,7 +247,10 @@ const PestDiseasePredictionNew = () => {
                         value={formData.cropVariety}
                         disabled={!formData.crop}
                       >
-                        <SelectTrigger><SelectValue placeholder="Select variety" /></SelectTrigger>
+                        <SelectTrigger className={`w-full ${focusedField === 'cropVariety' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                          onFocus={() => setFocusedField('cropVariety')} onBlur={() => setFocusedField(null)}>
+                          <SelectValue placeholder="Select variety" />
+                        </SelectTrigger>
                         <SelectContent>
                           {(cropVarieties[formData.crop] || []).map(v => <SelectItem key={v} value={v.toLowerCase()}>{v}</SelectItem>)}
                         </SelectContent>
@@ -251,7 +259,10 @@ const PestDiseasePredictionNew = () => {
                     <div className="space-y-2">
                       <Label htmlFor="region">Region/Location</Label>
                       <Select name="region" onValueChange={(value) => handleSelectChange('region', value)}>
-                        <SelectTrigger><SelectValue placeholder="Select region" /></SelectTrigger>
+                        <SelectTrigger className={`w-full ${focusedField === 'region' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                          onFocus={() => setFocusedField('region')} onBlur={() => setFocusedField(null)}>
+                          <SelectValue placeholder="Select region" />
+                        </SelectTrigger>
                         <SelectContent>
                           {regions.map(r => <SelectItem key={r} value={r.toLowerCase()}>{r}</SelectItem>)}
                         </SelectContent>
@@ -260,7 +271,10 @@ const PestDiseasePredictionNew = () => {
                     <div className="space-y-2">
                       <Label htmlFor="season">Season</Label>
                       <Select name="season" onValueChange={(value) => handleSelectChange('season', value)}>
-                        <SelectTrigger><SelectValue placeholder="Select season" /></SelectTrigger>
+                        <SelectTrigger className={`w-full ${focusedField === 'season' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                          onFocus={() => setFocusedField('season')} onBlur={() => setFocusedField(null)}>
+                          <SelectValue placeholder="Select season" />
+                        </SelectTrigger>
                         <SelectContent>{seasonOptions.map(s => <SelectItem key={s} value={s.toLowerCase()}>{s}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
@@ -274,25 +288,44 @@ const PestDiseasePredictionNew = () => {
                     <div className="space-y-2">
                       <Label htmlFor="soilType">Soil Type</Label>
                       <Select name="soilType" onValueChange={(value) => handleSelectChange('soilType', value)}>
-                        <SelectTrigger><SelectValue placeholder="Select soil type" /></SelectTrigger>
+                        <SelectTrigger className={`w-full ${focusedField === 'soilType' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                          onFocus={() => setFocusedField('soilType')} onBlur={() => setFocusedField(null)}>
+                          <SelectValue placeholder="Select soil type" />
+                        </SelectTrigger>
                         <SelectContent>{soilTypes.map(s => <SelectItem key={s} value={s.toLowerCase()}>{s}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                     <div>
                       <Label>Nitrogen (N) - mg/kg: {formData.nitrogen}</Label>
-                      <Slider value={[formData.nitrogen]} onValueChange={v => handleSliderChange('nitrogen', v)} min={0} max={200} step={1} className="[&_[data-radix-slider-thumb]]:bg-gray-200 [&_[data-radix-slider-thumb]]:rounded-full" />
+                      <Slider value={[formData.nitrogen]} onValueChange={v => handleSliderChange('nitrogen', v)} min={0} max={200} step={1} className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'nitrogen' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                        onPointerDown={() => setSliderActive('nitrogen')}
+                        onPointerUp={() => setSliderActive(null)}
+                        onBlur={() => setSliderActive(null)}
+                      />
                     </div>
                     <div>
                       <Label>Phosphorus (P) - mg/kg: {formData.phosphorus}</Label>
-                      <Slider value={[formData.phosphorus]} onValueChange={v => handleSliderChange('phosphorus', v)} min={0} max={100} step={1} className="[&_[data-radix-slider-thumb]]:bg-gray-200 [&_[data-radix-slider-thumb]]:rounded-full" />
+                      <Slider value={[formData.phosphorus]} onValueChange={v => handleSliderChange('phosphorus', v)} min={0} max={100} step={1} className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'phosphorus' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                        onPointerDown={() => setSliderActive('phosphorus')}
+                        onPointerUp={() => setSliderActive(null)}
+                        onBlur={() => setSliderActive(null)}
+                      />
                     </div>
                     <div>
                       <Label>Potassium (K) - mg/kg: {formData.potassium}</Label>
-                      <Slider value={[formData.potassium]} onValueChange={v => handleSliderChange('potassium', v)} min={0} max={150} step={1} className="[&_[data-radix-slider-thumb]]:bg-gray-200 [&_[data-radix-slider-thumb]]:rounded-full" />
+                      <Slider value={[formData.potassium]} onValueChange={v => handleSliderChange('potassium', v)} min={0} max={150} step={1} className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'potassium' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                        onPointerDown={() => setSliderActive('potassium')}
+                        onPointerUp={() => setSliderActive(null)}
+                        onBlur={() => setSliderActive(null)}
+                      />
                     </div>
                     <div>
                       <Label>Soil pH: {formData.soilpH}</Label>
-                      <Slider value={[formData.soilpH]} onValueChange={v => handleSliderChange('soilpH', v)} min={0} max={14} step={0.1} className="[&_[data-radix-slider-thumb]]:bg-gray-200 [&_[data-radix-slider-thumb]]:rounded-full" />
+                      <Slider value={[formData.soilpH]} onValueChange={v => handleSliderChange('soilpH', v)} min={0} max={14} step={0.1} className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'soilpH' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                        onPointerDown={() => setSliderActive('soilpH')}
+                        onPointerUp={() => setSliderActive(null)}
+                        onBlur={() => setSliderActive(null)}
+                      />
                     </div>
                   </div>
                 </div>
@@ -303,7 +336,10 @@ const PestDiseasePredictionNew = () => {
                    <div className="space-y-2">
                       <Label htmlFor="previousIssues">Previous Pest/Disease Issues (Optional)</Label>
                       <Select name="previousIssues" onValueChange={(value) => handleMultiSelectChange('previousIssues', value)}>
-                        <SelectTrigger><SelectValue placeholder="Select past issues" /></SelectTrigger>
+                        <SelectTrigger className={`w-full ${focusedField === 'previousIssues' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                          onFocus={() => setFocusedField('previousIssues')} onBlur={() => setFocusedField(null)}>
+                          <SelectValue placeholder="Select past issues" />
+                        </SelectTrigger>
                         <SelectContent>{pestDiseaseOptions.map(p => <SelectItem key={p} value={p.toLowerCase()}>{p}</SelectItem>)}</SelectContent>
                       </Select>
                       <div className="flex flex-wrap gap-2 pt-2">

@@ -35,6 +35,8 @@ const CropRotationPlanner = () => {
   const [recommendation, setRecommendation] = useState<{ nextCrop: string; justification: string; advantages: string[]; rotationPlan?: string[] } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [sliderActive, setSliderActive] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -164,7 +166,8 @@ const CropRotationPlanner = () => {
                     <div className="space-y-2">
                       <Label htmlFor="currentCrop">Current Crop</Label>
                       <Select name="currentCrop" onValueChange={(value) => handleSelectChange('currentCrop', value)} value={formData.currentCrop}>
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className={`w-full ${focusedField === 'currentCrop' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                          onFocus={() => setFocusedField('currentCrop')} onBlur={() => setFocusedField(null)}>
                           <SelectValue placeholder="Select current crop" />
                         </SelectTrigger>
                         <SelectContent>
@@ -176,7 +179,8 @@ const CropRotationPlanner = () => {
                     <div className="space-y-2">
                       <Label htmlFor="previousCrops">Previous Crop(s)</Label>
                       <Select name="previousCrops" onValueChange={(value) => handleMultiSelectChange('previousCrops', value)}>
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className={`w-full ${focusedField === 'previousCrops' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                          onFocus={() => setFocusedField('previousCrops')} onBlur={() => setFocusedField(null)}>
                           <SelectValue placeholder="Select previous crop(s)" />
                         </SelectTrigger>
                         <SelectContent>
@@ -213,7 +217,8 @@ const CropRotationPlanner = () => {
                     <div className="space-y-2">
                       <Label htmlFor="soilType">Soil Type</Label>
                       <Select name="soilType" onValueChange={(value) => handleSelectChange('soilType', value)} value={formData.soilType}>
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className={`w-full ${focusedField === 'soilType' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                          onFocus={() => setFocusedField('soilType')} onBlur={() => setFocusedField(null)}>
                           <SelectValue placeholder="Select soil type" />
                         </SelectTrigger>
                         <SelectContent>
@@ -225,7 +230,8 @@ const CropRotationPlanner = () => {
                     <div className="space-y-2">
                       <Label htmlFor="climateZone">Climate Zone</Label>
                       <Select name="climateZone" onValueChange={(value) => handleSelectChange('climateZone', value)} value={formData.climateZone}>
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className={`w-full ${focusedField === 'climateZone' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                          onFocus={() => setFocusedField('climateZone')} onBlur={() => setFocusedField(null)}>
                           <SelectValue placeholder="Select climate zone" />
                         </SelectTrigger>
                         <SelectContent>
@@ -237,7 +243,8 @@ const CropRotationPlanner = () => {
                     <div className="space-y-2">
                       <Label htmlFor="season">Season</Label>
                       <Select name="season" onValueChange={(value) => handleSelectChange('season', value)} value={formData.season}>
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className={`w-full ${focusedField === 'season' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                          onFocus={() => setFocusedField('season')} onBlur={() => setFocusedField(null)}>
                           <SelectValue placeholder="Select season" />
                         </SelectTrigger>
                         <SelectContent>
@@ -249,7 +256,8 @@ const CropRotationPlanner = () => {
                     <div className="space-y-2">
                       <Label htmlFor="waterAvailability">Water Availability</Label>
                       <Select name="waterAvailability" onValueChange={(value) => handleSelectChange('waterAvailability', value)} value={formData.waterAvailability}>
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className={`w-full ${focusedField === 'waterAvailability' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                          onFocus={() => setFocusedField('waterAvailability')} onBlur={() => setFocusedField(null)}>
                           <SelectValue placeholder="Select water availability" />
                         </SelectTrigger>
                         <SelectContent>
@@ -266,19 +274,35 @@ const CropRotationPlanner = () => {
                   <div className="space-y-6">
                     <div>
                       <Label>Nitrogen (N) - mg/kg: {formData.nitrogen}</Label>
-                      <Slider value={[formData.nitrogen]} onValueChange={val => setFormData(prev => ({ ...prev, nitrogen: val[0] }))} min={0} max={200} step={1} className="[&_[data-radix-slider-thumb]]:bg-gray-200 [&_[data-radix-slider-thumb]]:rounded-full"/>
+                      <Slider value={[formData.nitrogen]} onValueChange={val => setFormData(prev => ({ ...prev, nitrogen: val[0] }))} min={0} max={200} step={1} className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'nitrogen' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                        onPointerDown={() => setSliderActive('nitrogen')}
+                        onPointerUp={() => setSliderActive(null)}
+                        onBlur={() => setSliderActive(null)}>
+                      </Slider>
                     </div>
                     <div>
                       <Label>Phosphorus (P) - mg/kg: {formData.phosphorus}</Label>
-                      <Slider value={[formData.phosphorus]} onValueChange={val => setFormData(prev => ({ ...prev, phosphorus: val[0] }))} min={0} max={100} step={1} className="[&_[data-radix-slider-thumb]]:bg-gray-200 [&_[data-radix-slider-thumb]]:rounded-full"/>
+                      <Slider value={[formData.phosphorus]} onValueChange={val => setFormData(prev => ({ ...prev, phosphorus: val[0] }))} min={0} max={100} step={1} className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'phosphorus' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                        onPointerDown={() => setSliderActive('phosphorus')}
+                        onPointerUp={() => setSliderActive(null)}
+                        onBlur={() => setSliderActive(null)}>
+                      </Slider>
                     </div>
                     <div>
                       <Label>Potassium (K) - mg/kg: {formData.potassium}</Label>
-                      <Slider value={[formData.potassium]} onValueChange={val => setFormData(prev => ({ ...prev, potassium: val[0] }))} min={0} max={150} step={1} className="[&_[data-radix-slider-thumb]]:bg-gray-200 [&_[data-radix-slider-thumb]]:rounded-full"/>
+                      <Slider value={[formData.potassium]} onValueChange={val => setFormData(prev => ({ ...prev, potassium: val[0] }))} min={0} max={150} step={1} className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'potassium' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                        onPointerDown={() => setSliderActive('potassium')}
+                        onPointerUp={() => setSliderActive(null)}
+                        onBlur={() => setSliderActive(null)}>
+                      </Slider>
                     </div>
                     <div>
                       <Label>Soil pH: {formData.soilpH}</Label>
-                      <Slider value={[formData.soilpH]} onValueChange={val => setFormData(prev => ({ ...prev, soilpH: val[0] }))} min={0} max={14} step={0.1} className="[&_[data-radix-slider-thumb]]:bg-gray-200 [&_[data-radix-slider-thumb]]:rounded-full"/>
+                      <Slider value={[formData.soilpH]} onValueChange={val => setFormData(prev => ({ ...prev, soilpH: val[0] }))} min={0} max={14} step={0.1} className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'soilpH' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                        onPointerDown={() => setSliderActive('soilpH')}
+                        onPointerUp={() => setSliderActive(null)}
+                        onBlur={() => setSliderActive(null)}>
+                      </Slider>
                     </div>
                   </div>
                 </div>
@@ -290,7 +314,8 @@ const CropRotationPlanner = () => {
                     <div className="space-y-2">
                       <Label htmlFor="pestDiseaseHistory">Pest or Disease History (Optional)</Label>
                       <Select name="pestDiseaseHistory" onValueChange={(value) => handleMultiSelectChange('pestDiseaseHistory', value)}>
-                        <SelectTrigger className="w-full">
+                        <SelectTrigger className={`w-full ${focusedField === 'pestDiseaseHistory' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                          onFocus={() => setFocusedField('pestDiseaseHistory')} onBlur={() => setFocusedField(null)}>
                           <SelectValue placeholder="Select history (optional)" />
                         </SelectTrigger>
                         <SelectContent>

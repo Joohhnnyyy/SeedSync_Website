@@ -92,6 +92,8 @@ const FertilizerRecommendation = () => {
   } | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [sliderActive, setSliderActive] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -214,7 +216,8 @@ const FertilizerRecommendation = () => {
                   <div className="mb-6">
                     <Label htmlFor="cropType" className="font-semibold">Crop Type</Label>
                     <Select name="cropType" onValueChange={(value) => handleSelectChange('cropType', value)}>
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className={`w-full ${focusedField === 'cropType' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                        onFocus={() => setFocusedField('cropType')} onBlur={() => setFocusedField(null)}>
                         <SelectValue placeholder="Select your crop" />
                       </SelectTrigger>
                       <SelectContent>
@@ -240,7 +243,8 @@ const FertilizerRecommendation = () => {
                   <div className="mb-6">
                     <Label htmlFor="soilType" className="font-semibold">Soil Type</Label>
                     <Select name="soilType" onValueChange={(value) => handleSelectChange('soilType', value)}>
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className={`w-full ${focusedField === 'soilType' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                        onFocus={() => setFocusedField('soilType')} onBlur={() => setFocusedField(null)}>
                         <SelectValue placeholder="Select soil type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -259,7 +263,10 @@ const FertilizerRecommendation = () => {
                       min={0}
                       max={176}
                       step={1}
-                      className="[&>span:first-child]:bg-gray-200"
+                      className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'nitrogen' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                      onPointerDown={() => setSliderActive('nitrogen')}
+                      onPointerUp={() => setSliderActive(null)}
+                      onBlur={() => setSliderActive(null)}
                     />
                   </div>
                   <div className="mb-6">
@@ -270,7 +277,10 @@ const FertilizerRecommendation = () => {
                       min={0}
                       max={104}
                       step={1}
-                      className="[&>span:first-child]:bg-gray-200"
+                      className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'phosphorus' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                      onPointerDown={() => setSliderActive('phosphorus')}
+                      onPointerUp={() => setSliderActive(null)}
+                      onBlur={() => setSliderActive(null)}
                     />
                   </div>
                   <div className="mb-6">
@@ -281,7 +291,10 @@ const FertilizerRecommendation = () => {
                       min={0}
                       max={109}
                       step={1}
-                      className="[&>span:first-child]:bg-gray-200"
+                      className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'potassium' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                      onPointerDown={() => setSliderActive('potassium')}
+                      onPointerUp={() => setSliderActive(null)}
+                      onBlur={() => setSliderActive(null)}
                     />
                   </div>
                 </div>
@@ -296,7 +309,10 @@ const FertilizerRecommendation = () => {
                       min={0}
                       max={38}
                       step={0.1}
-                      className="[&>span:first-child]:bg-gray-200"
+                      className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'temperature' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                      onPointerDown={() => setSliderActive('temperature')}
+                      onPointerUp={() => setSliderActive(null)}
+                      onBlur={() => setSliderActive(null)}
                     />
                   </div>
                   <div className="mb-6">
@@ -307,7 +323,10 @@ const FertilizerRecommendation = () => {
                       min={25}
                       max={115}
                       step={0.1}
-                      className="[&>span:first-child]:bg-gray-200"
+                      className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'moisture' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                      onPointerDown={() => setSliderActive('moisture')}
+                      onPointerUp={() => setSliderActive(null)}
+                      onBlur={() => setSliderActive(null)}
                     />
                   </div>
                   <div className="mb-6">
@@ -318,7 +337,10 @@ const FertilizerRecommendation = () => {
                       min={50}
                       max={145}
                       step={0.1}
-                      className="[&>span:first-child]:bg-gray-200"
+                      className={`[&>span:first-child]:bg-gray-200 ${sliderActive === 'humidity' ? 'ring-2 ring-green-500 border-green-500' : ''}`}
+                      onPointerDown={() => setSliderActive('humidity')}
+                      onPointerUp={() => setSliderActive(null)}
+                      onBlur={() => setSliderActive(null)}
                     />
                   </div>
                 </div>
