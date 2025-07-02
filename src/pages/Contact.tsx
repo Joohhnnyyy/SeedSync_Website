@@ -15,6 +15,7 @@ const Contact = () => {
   const { toast } = useToast();
   const [form, setForm] = React.useState({ name: '', email: '', message: '' });
   const [loading, setLoading] = React.useState(false);
+  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setForm({ ...form, [e.target.id]: e.target.value });
@@ -31,7 +32,7 @@ const Contact = () => {
       // Simulate API call
       await new Promise(res => setTimeout(res, 1000));
       setForm({ name: '', email: '', message: '' });
-      toast({ title: 'Thank you for reaching out!', description: 'We will surely get in touch with you soon.', variant: 'black' });
+      setShowSuccessModal(true);
     } catch (err) {
       toast({ title: 'Failed to send message', variant: 'destructive' });
     } finally {
@@ -81,47 +82,44 @@ const Contact = () => {
                     </CardTitle>
                   </CardHeader>
                   
-                  <CardContent className="space-y-6">
-                    <form onSubmit={handleSubmit}>
-                      <div className="space-y-2">
-                        <Label htmlFor="name">Name</Label>
+                  <CardContent className="space-y-8">
+                    <form onSubmit={handleSubmit} className="space-y-8 mt-4">
+                      <div className="space-y-3">
+                        <Label htmlFor="name" className="text-base">Name</Label>
                         <Input 
                           id="name" 
                           type="text" 
                           placeholder="Your full name"
-                          className="h-12 bg-gray-100 border-gray-300 placeholder-gray-700"
+                          className="h-12 bg-gray-100 border-gray-300 placeholder-gray-700 px-4 text-base"
                           value={form.name}
                           onChange={handleChange}
                           disabled={loading}
                         />
                       </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
+                      <div className="space-y-3">
+                        <Label htmlFor="email" className="text-base">Email</Label>
                         <Input 
                           id="email" 
                           type="email" 
                           placeholder="Your email address"
-                          className="h-12 bg-gray-100 border-gray-300 placeholder-gray-700"
+                          className="h-12 bg-gray-100 border-gray-300 placeholder-gray-700 px-4 text-base"
                           value={form.email}
                           onChange={handleChange}
                           disabled={loading}
                         />
                       </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="message">Message</Label>
+                      <div className="space-y-3">
+                        <Label htmlFor="message" className="text-base">Message</Label>
                         <Textarea 
                           id="message" 
                           placeholder="Tell us how we can help you..."
-                          className="min-h-[120px] resize-none bg-gray-100 border-gray-300 placeholder-gray-700"
+                          className="min-h-[120px] resize-none bg-gray-100 border-gray-300 placeholder-gray-700 px-4 py-3 text-base"
                           value={form.message}
                           onChange={handleChange}
                           disabled={loading}
                         />
                       </div>
-                      
-                      <Button type="submit" className="w-full h-12 bg-black text-white hover:bg-gray-800" disabled={loading}>
+                      <Button type="submit" className="w-full h-12 bg-black text-white hover:bg-gray-800 mt-4" disabled={loading}>
                         {loading ? 'Sending...' : 'Send Message'}
                       </Button>
                     </form>
@@ -173,6 +171,21 @@ const Contact = () => {
       </div>
       
       <Footer />
+
+      {showSuccessModal && (
+        <div className="fixed bottom-8 right-8 z-50 flex items-end justify-end">
+          <div className="bg-black text-white rounded-lg shadow-lg p-6 max-w-sm w-full text-center animate-slide-in-up">
+            <h2 className="text-2xl font-bold mb-2">Thank you for reaching out!</h2>
+            <p className="mb-6">We will surely get in touch with you soon.</p>
+            <button
+              className="bg-white text-black px-6 py-2 rounded font-semibold hover:bg-gray-200 transition"
+              onClick={() => setShowSuccessModal(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
