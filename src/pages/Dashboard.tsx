@@ -34,7 +34,7 @@ const serviceTableMap = [
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const userName = user?.displayName || 'Farmer';
+  const [profileData, setProfileData] = useState<{ firstName?: string; lastName?: string }>({});
   // Remove servicesUsed and related logic
   // Add subscription logic
   const [subscription, setSubscription] = useState({ plan: 'Free', features: ['Basic crop recommendations', 'Access to government schemes'], available: [
@@ -58,6 +58,7 @@ const Dashboard = () => {
       const result = await res.json();
       if (!result.success || !result.data) return;
       const data = result.data;
+      setProfileData({ firstName: data.firstName, lastName: data.lastName });
       const fields = [
         { key: 'firstName', label: 'First Name' },
         { key: 'lastName', label: 'Last Name' },
@@ -107,6 +108,14 @@ const Dashboard = () => {
     const date = new Date(lastLoginRaw);
     lastLogin = format(date, 'PPpp'); // e.g., Apr 27, 2024 at 10:30 AM
     lastLoginTooltip = date.toString();
+  }
+
+  // Compute userName for greeting
+  let userName = 'Farmer';
+  if (profileData.firstName && profileData.lastName) {
+    userName = `${profileData.firstName} ${profileData.lastName}`.trim();
+  } else if (user?.displayName) {
+    userName = user.displayName;
   }
 
   const stats = [
