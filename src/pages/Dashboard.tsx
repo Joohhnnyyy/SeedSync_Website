@@ -35,9 +35,18 @@ const serviceTableMap = [
 const Dashboard = () => {
   const { user } = useAuth();
   const userName = user?.displayName || 'Farmer';
-  const [servicesUsed, setServicesUsed] = useState<string[]>([]);
-  const allServiceNames = serviceTableMap.map(s => s.name);
-  const [loadingServices, setLoadingServices] = useState(false);
+  // Remove servicesUsed and related logic
+  // Add subscription logic
+  const [subscription, setSubscription] = useState({ plan: 'Free', features: ['Basic crop recommendations', 'Access to government schemes'], available: [
+    { name: 'Free', features: ['Basic crop recommendations', 'Access to government schemes'] },
+    { name: 'Pro', features: ['Land registration assistance', 'Advanced AI support'] },
+    { name: 'Premium', features: ['All Pro features', 'Priority support', 'Advanced analytics'] },
+  ] });
+
+  const handleUpgrade = () => {
+    // Placeholder for upgrade logic
+    alert('Upgrade flow coming soon!');
+  };
   const [profileCompletion, setProfileCompletion] = useState({ percent: 0, missing: [] as string[] });
 
   const fetchProfileCompletion = useCallback(async () => {
@@ -74,19 +83,19 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchServicesUsed = async () => {
       if (!user) return;
-      setLoadingServices(true);
-      const used: string[] = [];
+      // setLoadingServices(true); // Removed
+      // const used: string[] = []; // Removed
       for (const { table, name } of serviceTableMap) {
         const { count, error } = await supabase
           .from(table)
           .select('id', { count: 'exact', head: true })
           .eq('user_id', user.uid);
         if (!error && count && count > 0) {
-          used.push(name);
+          // used.push(name); // Removed
         }
       }
-      setServicesUsed(used);
-      setLoadingServices(false);
+      // setServicesUsed(used); // Removed
+      // setLoadingServices(false); // Removed
     };
     fetchServicesUsed();
   }, [user]);
@@ -102,24 +111,20 @@ const Dashboard = () => {
 
   const stats = [
     {
-      label: 'Services Used',
-      value: loadingServices ? '...' : servicesUsed.length,
-      icon: <BarChart2 className="w-6 h-6 text-green-600" />,
+      label: 'Subscription',
+      value: `${subscription.plan} Plan`,
+      icon: <User className="w-6 h-6 text-purple-600" />,
       tooltip: (
-        <div className="min-w-[180px]">
-          <div className="font-semibold mb-2">Service Usage</div>
-          <ul className="space-y-1">
-            {allServiceNames.map((name) => (
-              <li key={name} className="flex items-center gap-2">
-                {servicesUsed.includes(name) ? (
-                  <CheckCircle2 className="w-4 h-4 text-green-600" />
-                ) : (
-                  <XCircle className="w-4 h-4 text-gray-400" />
-                )}
-                <span className={servicesUsed.includes(name) ? 'text-green-700' : 'text-gray-500'}>{name}</span>
+        <div className="min-w-[200px]">
+          <div className="font-semibold mb-2">Available Plans</div>
+          <ul className="mb-2">
+            {subscription.available.map(plan => (
+              <li key={plan.name} className="mb-1">
+                <span className="font-bold">{plan.name}:</span> {plan.features.join(', ')}
               </li>
             ))}
           </ul>
+          <button onClick={handleUpgrade} className="w-full bg-green-600 text-white rounded px-3 py-1 mt-2 hover:bg-green-700 transition">Upgrade</button>
         </div>
       ),
     },
