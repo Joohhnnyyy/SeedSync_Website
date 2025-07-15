@@ -21,6 +21,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from '@/components/ui/tooltip';
 import { format } from 'date-fns';
 import { apiUrl } from '../lib/utils';
+import { useMediaQuery } from 'react-responsive';
 
 const serviceTableMap = [
   { table: 'crop_recommendations', name: 'Crop Recommendation' },
@@ -171,6 +172,9 @@ const Dashboard = () => {
     { title: 'Pest & Disease', path: '/pest-disease', icon: <Bug className="w-10 h-10 text-red-700" /> }
   ];
 
+  const isMobile = useMediaQuery({ maxWidth: 767 });
+  const [subscriptionTooltipOpen, setSubscriptionTooltipOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
       <Navigation />
@@ -207,9 +211,16 @@ const Dashboard = () => {
           <div className="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10 px-2">
             {stats.map((stat, i) => (
               stat.tooltip ? (
-                <Tooltip key={stat.label}>
+                <Tooltip
+                  key={stat.label}
+                  open={isMobile ? subscriptionTooltipOpen : undefined}
+                  onOpenChange={isMobile ? setSubscriptionTooltipOpen : undefined}
+                >
                   <TooltipTrigger asChild>
-                    <Card className="bg-white border-0 shadow-md hover:shadow-lg transition-all cursor-pointer">
+                    <Card
+                      className="bg-white border-0 shadow-md hover:shadow-lg transition-all cursor-pointer"
+                      onClick={isMobile ? () => setSubscriptionTooltipOpen((open) => !open) : undefined}
+                    >
                       <CardContent className="flex flex-col items-center gap-0 py-8 px-4">
                         <div className="bg-green-100 rounded-full p-3 flex items-center justify-center mb-4">
                           {stat.icon}
